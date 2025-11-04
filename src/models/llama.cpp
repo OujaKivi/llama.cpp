@@ -1,4 +1,5 @@
 #include "models.h"
+#include <chrono>
 
 
 llm_build_llama::llm_build_llama(const llama_model & model, const llm_graph_params & params) : llm_graph_context(params) {
@@ -22,6 +23,7 @@ llm_build_llama::llm_build_llama(const llama_model & model, const llm_graph_para
         ggml_tensor * inp_out_ids = build_inp_out_ids();
 
         for (int il = 0; il < n_layer; ++il) {
+
             ggml_tensor * inpSA = inpL;
 
             // norm
@@ -33,15 +35,26 @@ llm_build_llama::llm_build_llama(const llama_model & model, const llm_graph_para
             // self-attention
             {
                 // rope freq factors for llama3; may return nullptr for llama2 and other models
+                // auto start_ts = std::chrono::high_resolution_clock::now();
                 ggml_tensor * rope_factors = model.get_rope_factors(cparams, il);
+                // auto end_ts = std::chrono::high_resolution_clock::now();
+                // auto us_f = std::chrono::duration<double, std::micro>(end_ts - start_ts).count();
+                // fprintf(stderr, "Layer %d: get_rope_factors cost: %.3f ms (%.0f us)\n", il, 
+                    // std::chrono::duration<double, std::milli>(end_ts - start_ts).count(), us_f);
 
                 // compute Q and K and RoPE them
+                // start_ts = std::chrono::high_resolution_clock::now();
                 ggml_tensor * Qcur = build_lora_mm(model.layers[il].wq, cur);
                 cb(Qcur, "Qcur", il);
                 if (model.layers[il].bq) {
                     Qcur = ggml_add(ctx0, Qcur, model.layers[il].bq);
                     cb(Qcur, "Qcur", il);
                 }
+                // end_ts = std::chrono::high_resolution_clock::now();
+                // us_f = std::chrono::duration<double, std::micro>(end_ts - start_ts).count();
+                // fprintf(stderr, "Layer %d: Qcur cost: %.3f ms (%.0f us)\n", il, 
+                    // std::chrono::duration<double, std::milli>(end_ts - start_ts).count(), us_f);
+
                 ggml_tensor * Kcur = build_lora_mm(model.layers[il].wk, cur);
                 cb(Kcur, "Kcur", il);
                 if (model.layers[il].bk) {

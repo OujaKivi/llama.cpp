@@ -1669,7 +1669,9 @@ static void ggml_compute_forward(struct ggml_compute_params * params, struct ggm
     if (ggml_cpu_extra_compute_forward(params, tensor)) {
         return;
     }
-
+    #if defined(INFER_OP_PERF)
+    uint64_t start_ts = ggml_time_us();
+    #endif
     switch (tensor->op) {
         case GGML_OP_DUP:
             {
@@ -2047,6 +2049,48 @@ static void ggml_compute_forward(struct ggml_compute_params * params, struct ggm
                 GGML_ABORT("fatal error");
             }
     }
+
+    #if defined(INFER_OP_PERF)
+    uint64_t end_ts = ggml_time_us();
+    // 定义足够大的缓冲区
+    char log_buf[1024];
+    int offset = 0;
+
+    // 格式化操作名、张量名
+    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+        " op %16s name %-20s shape [", ggml_op_name(tensor->op), tensor->name);
+
+    // 格式化shape维度
+    for (int j = 0; j < GGML_MAX_DIMS; j++) {
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+            "%6lld%s", (long long)tensor->ne[j], 
+            j < GGML_MAX_DIMS - 1 ? " x " : "");
+    }
+
+    // 格式化类型和耗时
+    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+        "] type %s cost=%d us startTS=%d endTs=%d \n", ggml_type_name(tensor->type), (int)(end_ts - start_ts), start_ts, end_ts);
+    
+
+    // 细节打印
+    for (int i = 0; i < GGML_MAX_SRC; i++) {
+        if (tensor->src[i] == NULL) {
+            break;
+        }
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+            "      src%d name=%s type=%s shape [", i, tensor->src[i]->name ,ggml_type_name(tensor->src[i]->type));
+            for (int j = 0; j < GGML_MAX_DIMS; j++) {
+                offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+                    "%6lld%s", (long long)tensor->src[i]->ne[j], 
+                    j < GGML_MAX_DIMS - 1 ? " x " : "");
+            }
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,"]\n");
+    }
+
+
+    // 一次性打印整个缓冲区，避免多线程穿插
+    fprintf(stderr, "ggml-cpu %s", log_buf);
+    #endif
 }
 
 // Android's libc implementation "bionic" does not support setting affinity
@@ -3129,6 +3173,18 @@ struct ggml_threadpool * ggml_threadpool_new(struct ggml_threadpool_params * tpp
 
 enum ggml_status ggml_graph_compute(struct ggml_cgraph * cgraph, struct ggml_cplan * cplan) {
     ggml_cpu_init();
+
+    // fprintf(stderr, "ggml_graph_compute: graph_name=%s n_nodes = %d, n_threads = %d\n",
+    //      cgraph->nodes[cgraph->n_nodes - 1]->name, cgraph->n_nodes, cplan->n_threads);
+
+    // for (int i = 0; i < cgraph->n_nodes; i++) {
+    //     struct ggml_tensor * node = cgraph->nodes[i];
+    //     fprintf(stderr, " node %4d : op %16s name %-20s shape [", i, ggml_op_name(node->op), node->name);
+    //     for (int j = 0; j < GGML_MAX_DIMS; j++) {
+    //         fprintf(stderr, "%6lld%s", (long long)node->ne[j], j < GGML_MAX_DIMS - 1 ? " x " : "");
+    //     }
+    //     fprintf(stderr, "] type %s\n", ggml_type_name(node->type));
+    // }
 
     GGML_ASSERT(cplan);
     GGML_ASSERT(cplan->n_threads > 0);

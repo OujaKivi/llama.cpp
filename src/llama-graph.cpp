@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <chrono> // added for timing
 
 void llm_graph_input_embd::set_input(const llama_ubatch * ubatch) {
     if (ubatch->token) {
@@ -595,9 +596,13 @@ llm_graph_context::llm_graph_context(const llm_graph_params & params) :
     }
 
 void llm_graph_context::cb(ggml_tensor * cur, const char * name, int il) const {
+    // preserve existing callback behavior
     if (cb_func) {
         cb_func(ubatch, cur, name, il);
     }
+
+    // // basic info log (keeps existing behavior) // 改为外部打点，此处先简单注释掉
+    // LLAMA_LOG_INFO("%s: name=%s il=%d\n", __func__, name, il);
 }
 
 ggml_tensor * llm_graph_context::build_cvec(
@@ -2028,8 +2033,8 @@ int32_t llama_relative_position_bucket(llama_pos x, llama_pos y, uint64_t n_buck
         n_buckets >>= 1;
     }
 
-    const int64_t max_exact = n_buckets >> 1;
 
+    const int64_t max_exact = n_buckets >> 1;
     int32_t relative_position = x - y;
     int32_t relative_bucket = 0;
 

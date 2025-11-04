@@ -8814,6 +8814,7 @@ bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor
         || (src0 != nullptr && src0->extra)
         || (src1 != nullptr && src1->extra);
 
+    uint64_t start_ts = ggml_time_us();
     switch (tensor->op) {
         case GGML_OP_GET_ROWS:
             if (!any_on_device) {
@@ -9057,5 +9058,6 @@ bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor
     }
 
     func(backend, tensor->src[0], tensor->src[1], tensor);
+
     return true;
 }
