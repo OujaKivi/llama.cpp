@@ -7410,16 +7410,12 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
     // 【SOSP2025】Characterizing Mobile SoC for Accelerating Heterogeneous LLM Inference 阶梯状测试
 
     for (int i = 8; i <200; i+=8) {
-        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0, GGML_TYPE_F32, 4096, 14336, i, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0, GGML_TYPE_F32, 4096, i, 14336, {1, 1}, {1, 1}));
     }
 
     for (int i = 8; i <200; i+=8) {
-        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_F32, 4096, 14336, i, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_F32, 4096, i, 14336, {1, 1}, {1, 1}));
     }
-
-    // for (int i = 8; i <200; i+=8) {
-    //     test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F32, GGML_TYPE_Q4_0, i, 14336, 4096, {1, 1}, {1, 1}));
-    // }
 
     // 
 
