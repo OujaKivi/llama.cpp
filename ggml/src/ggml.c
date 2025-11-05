@@ -3103,6 +3103,9 @@ struct ggml_tensor * ggml_mul_mat(
         struct ggml_context * ctx,
         struct ggml_tensor  * a,
         struct ggml_tensor  * b) {
+    fprintf(stderr, "ggml_mul_mat: a ne = [%lld, %lld, %lld, %lld], b ne = [%lld, %lld, %lld, %lld]\n",
+        a->ne[0], a->ne[1], a->ne[2], a->ne[3],
+        b->ne[0], b->ne[1], b->ne[2], b->ne[3]);
     GGML_ASSERT(ggml_can_mul_mat(a, b));
     GGML_ASSERT(!ggml_is_transposed(a));
 
