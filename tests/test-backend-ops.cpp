@@ -7387,24 +7387,41 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
     // }
 
     // ----- temp2:测试的矩阵乘法 start ------
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 2048, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 2048, {1, 1}, {1, 1}));
 
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 8192, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 8192, {1, 1}, {1, 1}));
+    // llm.npu论文中的前置测试
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 2048, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 2048, {1, 1}, {1, 1}));
 
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 11008, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 11008, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 8192, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 8192, {1, 1}, {1, 1}));
 
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 4096, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 4096, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 64, 2048, 11008, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 64, 2048, 11008, {1, 1}, {1, 1}));
 
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 8192, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 8192, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 4096, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 4096, {1, 1}, {1, 1}));
 
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 11008, {1, 1}, {1, 1}));
-    test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 11008, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 8192, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 8192, {1, 1}, {1, 1}));
 
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, 32, 4096, 11008, {1, 1}, {1, 1}));
+    // test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F16, GGML_TYPE_F16, 32, 4096, 11008, {1, 1}, {1, 1}));
+
+    // 【SOSP2025】Characterizing Mobile SoC for Accelerating Heterogeneous LLM Inference 阶梯状测试
+
+    for (int i = 8; i <200; i+=8) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0, GGML_TYPE_F32, 4096,14336, i, {1, 1}, {1, 1}));
+    }
+
+    for (int i = 8; i <200; i+=8) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q8_0, GGML_TYPE_F32, 4096,14336, i, {1, 1}, {1, 1}));
+    }
+
+    for (int i = 8; i <200; i+=8) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_F32, GGML_TYPE_Q4_0, i,14336, 4096, {1, 1}, {1, 1}));
+    }
+
+    // 
 
     // ----- temp2 end ------
 
