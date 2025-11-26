@@ -3588,6 +3588,7 @@ int ggml_cpu_has_sme(void) {
 
 void ggml_cpu_init(void) {
     // needed to initialize ggml_time
+    fprintf(stderr, "ggml_cpu_init\n"); // 临时，判断fprintf是否可用
     {
         struct ggml_init_params params = { 0, NULL, false };
         struct ggml_context * ctx = ggml_init(params);

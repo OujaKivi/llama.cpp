@@ -424,6 +424,11 @@ int main(int argc, char ** argv) {
 
     if (params.interactive) {
         LOG_INF("%s: interactive mode on.\n", __func__);
+        #if defined(INFER_OP_PERF)
+        printf("INFER_OP_PERF is defined, value = %d\n", INFER_OP_PERF);
+        #else
+        printf("INFER_OP_PERF is NOT defined\n");
+        #endif
 
         if (!params.antiprompt.empty()) {
             for (const auto & antiprompt : params.antiprompt) {
