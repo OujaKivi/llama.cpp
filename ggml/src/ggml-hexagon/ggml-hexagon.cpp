@@ -3172,6 +3172,10 @@ static inline int last_compute_op(ggml_cgraph * graph) {
 }
 
 static ggml_status ggml_backend_hexagon_graph_compute(ggml_backend_t backend, ggml_cgraph * graph) {
+
+    fprintf(stderr, "hex fprintf TEST\n"); // 临时，判断fprintf是否可用
+    GGML_LOG_INFO(stderr, "hex LOG TEST\n"); // 临时，判断GGML_LOG_INFO是否可用
+
     auto sess = static_cast<ggml_hexagon_session *>(backend->context);
 
     HEX_VERBOSE("ggml-hex: %s graph-compute n_nodes %d\n", sess->name.c_str(), graph->n_nodes);
