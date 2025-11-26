@@ -8863,6 +8863,7 @@ bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor
 
     fprintf(stderr, "opencl fprintf TEST\n"); // 临时，判断fprintf是否可用
     GGML_LOG_INFO("opencl LOG TEST\n"); // 临时，判断GGML_LOG_INFO是否可用
+    abort();
 
     #if defined(INFER_OP_PERF_OPENCL)
     uint64_t start_ts = ggml_time_us();

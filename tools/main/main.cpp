@@ -423,7 +423,7 @@ int main(int argc, char ** argv) {
     }
 
     if (params.interactive) {
-        LOG_INF("%s: interactive mode on.\n", __func__);
+        LOG_INF("%s: interactive mode on. 2\n", __func__);
         #if defined(INFER_OP_PERF)
         printf("INFER_OP_PERF is defined, value = %d\n", INFER_OP_PERF);
         #else

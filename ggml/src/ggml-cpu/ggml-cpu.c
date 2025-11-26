@@ -1659,8 +1659,10 @@ static void ggml_compute_forward_mul_mat_id(
 /////////////////////////////////
 
 static void ggml_compute_forward(struct ggml_compute_params * params, struct ggml_tensor * tensor) {
+    
     fprintf(stderr, "cpu fprintf TEST\n"); // 临时，判断fprintf是否可用
     GGML_LOG_INFO("cpu LOG TEST\n"); // 临时，判断GGML_LOG_INFO是否可用
+    abort();
     GGML_ASSERT(params);
 
     if (tensor->op == GGML_OP_NONE || ggml_is_empty(tensor)) {
@@ -3588,7 +3590,6 @@ int ggml_cpu_has_sme(void) {
 
 void ggml_cpu_init(void) {
     // needed to initialize ggml_time
-    fprintf(stderr, "ggml_cpu_init\n"); // 临时，判断fprintf是否可用
     {
         struct ggml_init_params params = { 0, NULL, false };
         struct ggml_context * ctx = ggml_init(params);
