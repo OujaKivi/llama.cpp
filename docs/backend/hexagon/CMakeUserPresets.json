@@ -70,6 +70,9 @@
     { "name": "arm64-android-snapdragon-debug"  , "inherits": [ "base", "arm64-android-snapdragon", "debug" ] },
     { "name": "arm64-android-snapdragon-release", "inherits": [ "base", "arm64-android-snapdragon", "release" ] },
 
+    { "name": "arm64-android-snapdragon-perflog-debug"  , "inherits": [ "base", "arm64-android-snapdragon-perflog", "debug" ] },
+    { "name": "arm64-android-snapdragon-perflog-release", "inherits": [ "base", "arm64-android-snapdragon-perflog", "release" ] },
+
     { "name": "arm64-windows-snapdragon-debug"  , "inherits": [ "base", "arm64-windows-snapdragon", "debug" ] },
     { "name": "arm64-windows-snapdragon-release", "inherits": [ "base", "arm64-windows-snapdragon", "release" ] }
   ]
