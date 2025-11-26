@@ -22,6 +22,16 @@ if (GGML_OPENCL_USE_ADRENO_KERNELS)
     add_compile_definitions(GGML_OPENCL_USE_ADRENO_KERNELS)
 endif ()
 
+if (INFER_OP_PERF)
+    message(STATUS "[INFER_OP_PERF] CPU will use op-wise performance logging")
+    add_compile_definitions(INFER_OP_PERF)
+endif ()
+
+if (INFER_OP_PERF_OPENCL)
+    message(STATUS "[INFER_OP_PERF_OPENCL] OpenCL will use op-wise performance logging")
+    add_compile_definitions(INFER_OP_PERF_OPENCL)
+endif ()
+
 if (GGML_OPENCL_EMBED_KERNELS)
     add_compile_definitions(GGML_OPENCL_EMBED_KERNELS)
 
