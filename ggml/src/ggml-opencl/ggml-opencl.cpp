@@ -8804,6 +8804,52 @@ static void ggml_cl_glu(ggml_backend_t backend, const ggml_tensor * src0, const 
 
 typedef void (*ggml_cl_func_t)(ggml_backend_t backend, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst);
 
+
+#if defined(INFER_OP_PERF_OPENCL)
+static void log_ggml_cl_op_elapsed(int64_t start_ts, const ggml_tensor * tensor) {
+
+    uint64_t end_ts = ggml_time_us();
+    // define a sufficiently large buffer
+    char log_buf[1024];
+    int offset = 0;
+
+    // Format operation name and tensor name
+    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+        " op %16s name %-20s shape [", ggml_op_name(tensor->op), tensor->name);
+
+    // Format tensor shape
+    for (int j = 0; j < GGML_MAX_DIMS; j++) {
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+            "%6lld%s", (long long)tensor->ne[j], 
+            j < GGML_MAX_DIMS - 1 ? " x " : "");
+    }
+
+    // Finalize log entry with type and timing
+    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+        "] type %s cost=%d us startTS=%d endTs=%d \n", ggml_type_name(tensor->type), (int)(end_ts - start_ts), start_ts, end_ts);
+    
+
+    // Format source tensors
+    for (int i = 0; i < GGML_MAX_SRC; i++) {
+        if (tensor->src[i] == NULL) {
+            break;
+        }
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+            "      src%d name=%s type=%s shape [", i, tensor->src[i]->name ,ggml_type_name(tensor->src[i]->type));
+            for (int j = 0; j < GGML_MAX_DIMS; j++) {
+                offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
+                    "%6lld%s", (long long)tensor->src[i]->ne[j], 
+                    j < GGML_MAX_DIMS - 1 ? " x " : "");
+            }
+        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,"]\n");
+    }
+
+
+    // Output the log entry
+    fprintf(stderr, "ggml-opencl %s", log_buf);
+}
+#endif
+
 bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor) {
     ggml_cl_func_t func = nullptr;
 
@@ -9070,48 +9116,3 @@ bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor
 
     return true;
 }
-
-#if defined(INFER_OP_PERF_OPENCL)
-void log_ggml_cl_op_elapsed(int64_t start_ts, const ggml_tensor * tensor) {
-
-    uint64_t end_ts = ggml_time_us();
-    // define a sufficiently large buffer
-    char log_buf[1024];
-    int offset = 0;
-
-    // Format operation name and tensor name
-    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
-        " op %16s name %-20s shape [", ggml_op_name(tensor->op), tensor->name);
-
-    // Format tensor shape
-    for (int j = 0; j < GGML_MAX_DIMS; j++) {
-        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
-            "%6lld%s", (long long)tensor->ne[j], 
-            j < GGML_MAX_DIMS - 1 ? " x " : "");
-    }
-
-    // Finalize log entry with type and timing
-    offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
-        "] type %s cost=%d us startTS=%d endTs=%d \n", ggml_type_name(tensor->type), (int)(end_ts - start_ts), start_ts, end_ts);
-    
-
-    // Format source tensors
-    for (int i = 0; i < GGML_MAX_SRC; i++) {
-        if (tensor->src[i] == NULL) {
-            break;
-        }
-        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
-            "      src%d name=%s type=%s shape [", i, tensor->src[i]->name ,ggml_type_name(tensor->src[i]->type));
-            for (int j = 0; j < GGML_MAX_DIMS; j++) {
-                offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,
-                    "%6lld%s", (long long)tensor->src[i]->ne[j], 
-                    j < GGML_MAX_DIMS - 1 ? " x " : "");
-            }
-        offset += snprintf(log_buf + offset, sizeof(log_buf) - offset,"]\n");
-    }
-
-
-    // Output the log entry
-    fprintf(stderr, "ggml-opencl %s", log_buf);
-}
-#endif
