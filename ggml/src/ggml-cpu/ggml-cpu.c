@@ -1660,7 +1660,7 @@ static void ggml_compute_forward_mul_mat_id(
 
 static void ggml_compute_forward(struct ggml_compute_params * params, struct ggml_tensor * tensor) {
     fprintf(stderr, "cpu fprintf TEST\n"); // 临时，判断fprintf是否可用
-    GGML_LOG_INFO(stderr, "cpu LOG TEST\n"); // 临时，判断GGML_LOG_INFO是否可用
+    GGML_LOG_INFO("cpu LOG TEST\n"); // 临时，判断GGML_LOG_INFO是否可用
     GGML_ASSERT(params);
 
     if (tensor->op == GGML_OP_NONE || ggml_is_empty(tensor)) {
