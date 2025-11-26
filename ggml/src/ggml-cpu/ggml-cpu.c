@@ -2049,6 +2049,7 @@ static void ggml_compute_forward(struct ggml_compute_params * params, struct ggm
                 GGML_ABORT("fatal error");
             }
     }
+    fprintf(stderr, "cpu LOG TEST\n"); // 临时，判断fprintf是否可用
 
     #if defined(INFER_OP_PERF)
     uint64_t end_ts = ggml_time_us();
@@ -2090,6 +2091,7 @@ static void ggml_compute_forward(struct ggml_compute_params * params, struct ggm
 
     // 一次性打印整个缓冲区，避免多线程穿插
     fprintf(stderr, "ggml-cpu %s", log_buf);
+    GGML_LOG_INFO("ggml-cpu %s", log_buf)
     #endif
 }
 

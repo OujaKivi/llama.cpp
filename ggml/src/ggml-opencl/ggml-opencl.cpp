@@ -8847,6 +8847,7 @@ static void log_ggml_cl_op_elapsed(int64_t start_ts, const ggml_tensor * tensor)
 
     // Output the log entry
     fprintf(stderr, "ggml-opencl %s", log_buf);
+    GGML_LOG_INFO("ggml-opencl %s", log_buf);
 }
 #endif
 
@@ -8859,6 +8860,8 @@ bool ggml_cl_compute_forward(ggml_backend_t backend, struct ggml_tensor * tensor
     const bool any_on_device = tensor->extra
         || (src0 != nullptr && src0->extra)
         || (src1 != nullptr && src1->extra);
+
+    fprintf(stderr, "opencl LOG TEST\n"); // 临时，判断fprintf是否可用
 
     #if defined(INFER_OP_PERF_OPENCL)
     uint64_t start_ts = ggml_time_us();
